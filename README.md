@@ -1,18 +1,37 @@
-# Salesforce DX Project: Next Steps
+# Salesforce Bitbucket Pipelines CI/CD
 
-Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
+# **How does it work?**
 
-## How Do You Plan to Deploy Your Changes?
+The deployment automation is done by the pipelines of the Bitbucket and this is configured on the file `bitbucket-pipelines.yml`, in this file you can add any bash commands that you want, for our deployment we can resume the steps like below
 
-Do you want to deploy a set of changes, or create a self-contained application? Choose a [development model](https://developer.salesforce.com/tools/vscode/en/user-guide/development-models).
+- Permissions and additional installations
+    - Python and libs (necessary to identify some file names)
+    - SFDX plugin delta (identify the changes of salesforce metadata E.g. Apex classes, Custom fields, Triggers, etc.)
+    - PMD (Static code analyzer)
+- SFDX Authentication by JWT
+- SFDX plugin delta
+    - Identify changed files that can be deployed and build the `package.xml`
+    - If validation
+        - `-to HEAD --from origin/[destination branch]`(compare all the commits to the destination branch)
+    - If deployment
+        - `-to HEAD --from HEAD^`  (compare each commit with the previous)
+- PMD on the Apex classes that changed
+- Identify test classes
+    - Check each apex class changed and try to find the respective test class with the suffix **“_Test”**
+- Validation (SFDX)
+    - Changes in classes?
+        - If yes
+            - Run deployment validation with specified tests
+        - If no
+            - Run deployment validation without any tests
+    - Nothing changed in the folder `force-app`
+- Deploy (SFDX)
+    - Changes in classes?
+        - If yes
+            - Run real deployment with specified tests
+        - If no
+            - Run real deployment without any tests
+    - Nothing changed in the folder `force-app`
+        - It will not deploy any SFDC metadata
 
-## Configure Your Salesforce DX Project
-
-The `sfdx-project.json` file contains useful configuration information for your project. See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm) in the _Salesforce DX Developer Guide_ for details about this file.
-
-## Read All About It
-
-- [Salesforce Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
-- [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
+If you want to skip the pipeline automation, add a **[skip ci]** inside the commit message
