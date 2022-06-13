@@ -35,3 +35,11 @@ The deployment automation is done by the pipelines of the Bitbucket and this is 
         - It will not deploy any SFDC metadata
 
 If you want to skip the pipeline automation, add a **[skip ci]** inside the commit message
+
+# **Proposed deployment flow**
+- bugfixes or features must be created from feature/dev
+
+- hotfixes must be created from main
+
+![deployment flow](/assets/FLOW%20DEPLOYMENT%20SALESFORCE.png)
+
