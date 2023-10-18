@@ -40,9 +40,10 @@ then
     unzip pmd/pmd-bin-6.42.0.zip -d pmd
     scripts/additionalInstallations.sh
     sfdx force:auth:jwt:grant --clientid $consumerKey --username $username --jwtkeyfile keys/server.key --setdefaultdevhubusername --setalias sfdx-ci --instanceurl $loginUrl
-    sfdx sgd:source:delta -s force-app --to HEAD --from $destination --output . --generate-delta
+    mkdir changed-sources
+    sfdx sgd:source:delta -s force-app --to HEAD --from $destination --output ./changed-sources --generate-delta
     #===Make sure there is no PMD error with a high priority===
-    pmd/pmd-bin-6.42.0/bin/run.sh pmd --minimum-priority $PMD_MINIMUM_PRIORITY -d package -R pmd/custom-apex-rules.xml -f text -l apex
+    pmd/pmd-bin-6.42.0/bin/run.sh pmd --minimum-priority $PMD_MINIMUM_PRIORITY -d ./changed-sources -R pmd/custom-apex-rules.xml -f textcolor -l apex
     scripts/getTestClassesName.sh
     scripts/validateDeploy.sh
 else 
