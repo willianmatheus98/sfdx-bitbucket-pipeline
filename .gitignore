@@ -89,3 +89,6 @@ $RECYCLE.BIN/
 
 # Local environment variables
 .env
+
+# SFDX Delta auto-generated on build execution
+changed-sources/
