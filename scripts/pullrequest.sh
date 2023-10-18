@@ -1,6 +1,7 @@
 chmod +x scripts/additionalInstallations.sh
 chmod +x scripts/getTestClassesName.sh
 chmod +x scripts/validateDeploy.sh
+chmod +x scripts/checkOnlyDeletions.sh
 sfdx --version
 destination="origin/${BITBUCKET_PR_DESTINATION_BRANCH}"
 echo "-------------------DESTINATION BRANCH IS: [$destination]---------------------"
@@ -42,6 +43,7 @@ then
     sfdx force:auth:jwt:grant --clientid $consumerKey --username $username --jwtkeyfile keys/server.key --setdefaultdevhubusername --setalias sfdx-ci --instanceurl $loginUrl
     mkdir changed-sources
     sfdx sgd:source:delta -s force-app --to HEAD --from $destination --output ./changed-sources --generate-delta
+    scripts/checkOnlyDeletions.sh
     #===Make sure there is no PMD error with a high priority===
     pmd/pmd-bin-6.42.0/bin/run.sh pmd --minimum-priority $PMD_MINIMUM_PRIORITY -d ./changed-sources -R pmd/custom-apex-rules.xml -f textcolor -l apex
     scripts/getTestClassesName.sh
